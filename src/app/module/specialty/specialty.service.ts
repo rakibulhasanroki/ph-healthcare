@@ -1,9 +1,9 @@
-import { Specialty } from "../../generated/prisma/client";
-import { prisma } from "../lib/prisma";
+import { Specialty } from "../../../generated/prisma/client";
+import { prisma } from "../../lib/prisma";
 
 const createSpecialty = async (payload: Specialty): Promise<Specialty> => {
   const { title } = payload;
-  const specialtyExists = await prisma.specialty.findUniqueOrThrow({
+  const specialtyExists = await prisma.specialty.findUnique({
     where: { title: title },
   });
 
