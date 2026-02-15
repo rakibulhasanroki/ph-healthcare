@@ -10,6 +10,7 @@
     "lint": "eslint ./src",
     "migrate": "prisma migrate dev",
     "generate": "prisma generate",
+    "format": "prisma format",
     "studio": "prisma studio",
     "push": "prisma db push",
     "pull": "prisma db pull",
