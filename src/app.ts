@@ -1,5 +1,7 @@
 import express, { Application, Request, Response } from "express";
 import { IndexRouter } from "./app/router";
+import globalErrorHandler from "./app/middleware/globalError.Handler";
+import notFoundHandler from "./app/middleware/notFoundHandler";
 
 const app: Application = express();
 
@@ -12,5 +14,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1", IndexRouter);
+
+app.use(globalErrorHandler);
+app.use(notFoundHandler);
 
 export default app;

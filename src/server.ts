@@ -1,9 +1,10 @@
 import app from "./app";
+import { env } from "./config/env";
 
 const main = () => {
   try {
-    app.listen(5000, () => {
-      console.log(`Server is running on http://localhost:5000`);
+    app.listen(env.PORT, () => {
+      console.log(`Server is running on http://localhost:${env.PORT}`);
     });
   } catch (err) {
     console.log("Failed to start server", err);
