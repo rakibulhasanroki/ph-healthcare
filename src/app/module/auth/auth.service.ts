@@ -1,17 +1,10 @@
+import status from "http-status";
 import { UserStatus } from "../../../generated/prisma/enums";
+import AppError from "../../errorHelpers/AppError";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
-
-interface RegisterPayload {
-  email: string;
-  password: string;
-  name: string;
-}
-
-interface LoginPayload {
-  email: string;
-  password: string;
-}
+import { TokenUtils } from "../../utils/token";
+import { LoginPayload, RegisterPayload } from "./auth.interfaces";
 
 const registerPatient = async (payload: RegisterPayload) => {
   const { email, password, name } = payload;
@@ -24,7 +17,7 @@ const registerPatient = async (payload: RegisterPayload) => {
     },
   });
   if (!data.user) {
-    throw new Error("Failed to register user");
+    throw new AppError(status.BAD_REQUEST, "Failed to register patient");
   }
   try {
     const patientData = await prisma.$transaction(async (tx) => {
@@ -38,8 +31,30 @@ const registerPatient = async (payload: RegisterPayload) => {
       return patient;
     });
 
+    const accessToken = TokenUtils.getAccessToken({
+      userId: data.user.id,
+      email: data.user.email,
+      name: data.user.name,
+      role: data.user.role,
+      status: data.user.status,
+      isDeleted: data.user.isDeleted,
+      emailVerified: data.user.emailVerified,
+    });
+
+    const refreshToken = TokenUtils.getRefreshToken({
+      userId: data.user.id,
+      email: data.user.email,
+      name: data.user.name,
+      role: data.user.role,
+      status: data.user.status,
+      isDeleted: data.user.isDeleted,
+      emailVerified: data.user.emailVerified,
+    });
+
     return {
       ...data,
+      accessToken,
+      refreshToken,
       patientData,
     };
   } catch (error) {
@@ -61,17 +76,45 @@ const loginUser = async (payload: LoginPayload) => {
     },
   });
   if (!data.user) {
-    throw new Error("Failed to login user");
+    throw new AppError(status.BAD_REQUEST, "Failed to login user");
   }
 
   if (data.user.status === UserStatus.BLOCKED) {
-    throw new Error("Your account is blocked. Please contact support.");
+    throw new AppError(
+      status.FORBIDDEN,
+      "Your account is blocked. Please contact support.",
+    );
   }
 
   if (data.user.isDeleted || data.user.status === UserStatus.DELETED) {
-    throw new Error("Your account is deleted");
+    throw new AppError(status.NOT_FOUND, "Your account is deleted");
   }
-  return data;
+
+  const accessToken = TokenUtils.getAccessToken({
+    userId: data.user.id,
+    email: data.user.email,
+    name: data.user.name,
+    role: data.user.role,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  const refreshToken = TokenUtils.getRefreshToken({
+    userId: data.user.id,
+    email: data.user.email,
+    name: data.user.name,
+    role: data.user.role,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  return {
+    ...data,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const AuthService = {

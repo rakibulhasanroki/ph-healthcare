@@ -1,4 +1,6 @@
+import status from "http-status";
 import { Specialty } from "../../../generated/prisma/client";
+import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
 
 const createSpecialty = async (payload: Specialty): Promise<Specialty> => {
@@ -8,7 +10,10 @@ const createSpecialty = async (payload: Specialty): Promise<Specialty> => {
   });
 
   if (specialtyExists) {
-    throw new Error("Specialty with this name already exists");
+    throw new AppError(
+      status.CONFLICT,
+      "Specialty with this name already exists",
+    );
   }
   const specialty = await prisma.specialty.create({
     data: payload,
