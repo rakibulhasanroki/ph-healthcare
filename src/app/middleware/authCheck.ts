@@ -67,6 +67,7 @@ const authCheck =
               "Forbidden access! You do not have permission to access this resources",
             );
           }
+          req.user = user;
         }
       }
 

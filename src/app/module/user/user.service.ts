@@ -39,6 +39,7 @@ const createDoctor = async (payload: IDoctorPayload) => {
     body: {
       email: payload.doctor.email,
       password: payload.password,
+      role: Role.DOCTOR,
       name: payload.doctor.name,
       needsPasswordChange: true,
     },
