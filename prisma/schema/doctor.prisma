@@ -1,10 +1,5 @@
-enum Gender {
-  MALE
-  FEMALE
-}
-
 model Doctor {
-  id                  String    @id @default(uuid(7))
+  id                  String    @id @default(uuid(7)) @db.Uuid
   name                String
   email               String    @unique
   profilePhoto        String?
@@ -24,9 +19,14 @@ model Doctor {
   updatedAt           DateTime  @updatedAt
 
   // relations
-  userId      String            @unique
-  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  specialties DoctorSpecialty[]
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  doctorSchedules   DoctorSchedules[]
+  appointments      Appointment[]
+  reviews           Review[]
+  doctorSpecialties DoctorSpecialty[]
+  prescriptions     Prescription[]
 
   @@index([email], name: "idx_doctor_email")
   @@index([isDeleted], name: "idx_doctor_is_deleted")

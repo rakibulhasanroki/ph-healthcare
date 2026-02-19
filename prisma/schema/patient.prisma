@@ -1,5 +1,5 @@
 model Patient {
-  id            String    @id @default(uuid(7))
+  id            String    @id @default(uuid(7)) @db.Uuid
   name          String
   email         String    @unique
   profilePhoto  String?
@@ -9,6 +9,12 @@ model Patient {
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  patientHealthData PatientHealthData?
+  appointments      Appointment[]
+  reviews           Review[]
+  medicalReports    MedicalReport[]
+  prescriptions     Prescription[]
 
   // relations
   userId String @unique

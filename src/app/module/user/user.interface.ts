@@ -16,25 +16,16 @@ export interface IDoctorPayload {
     currentWorkingPlace: string;
     designations: string;
   };
-  specialtyIds: string[];
+  specialties: string[];
 }
 
-export interface ICreateAdmin {
+export interface ICreateAdminPayload {
   password: string;
   admin: {
     name: string;
     email: string;
     profilePhoto?: string;
-    contactNumber: string;
+    contactNumber?: string;
   };
-}
-
-export interface ICreateSuperAdmin {
-  password: string;
-  superAdmin: {
-    name: string;
-    email: string;
-    profilePhoto?: string;
-    contactNumber: string;
-  };
+  role: "ADMIN" | "SUPER_ADMIN";
 }

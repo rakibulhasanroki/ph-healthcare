@@ -46,33 +46,36 @@ const createDoctorSchema = z.object({
       .min(2, "Designation must be at least 2 characters")
       .max(50, "Designation must be less than 50 characters"),
   }),
-  specialtyIds: z
+  specialties: z
     .array(z.uuid(), "Specialties must be an array of UUIDs")
     .min(1, "At least one specialty is required"),
 });
 
-const createAdminSchema = z.object({
-  password: z.string().min(6, "Password must be at least 6 characters"),
+export const createAdminSchema = z.object({
+  password: z
+    .string("Password is required")
+    .min(6, "Password must be at least 6 characters")
+    .max(20, "Password must be at most 20 characters"),
   admin: z.object({
-    name: z.string().min(1, "Name is required"),
-    email: z.email("Invalid email format"),
-    profilePhoto: z.url("Invalid URL format").optional(),
-    contactNumber: z.string().min(1, "Contact number is required"),
+    name: z
+      .string("Name is required and must be string")
+      .min(5, "Name must be at least 5 characters")
+      .max(30, "Name must be at most 30 characters"),
+    email: z.email("Invalid email address"),
+    contactNumber: z
+      .string("Contact number is required")
+      .min(11, "Contact number must be at least 11 characters")
+      .max(14, "Contact number must be at most 15 characters")
+      .optional(),
+    profilePhoto: z.url("Profile photo must be a valid URL").optional(),
   }),
-});
-
-const createSuperAdminSchema = z.object({
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  superAdmin: z.object({
-    name: z.string().min(1, "Name is required"),
-    email: z.email("Invalid email format"),
-    profilePhoto: z.url("Invalid URL format").optional(),
-    contactNumber: z.string().min(1, "Contact number is required"),
-  }),
+  role: z.enum(
+    ["ADMIN", "SUPER_ADMIN"],
+    "Role must be either ADMIN or SUPER_ADMIN",
+  ),
 });
 
 export const UserValidation = {
   createDoctorSchema,
   createAdminSchema,
-  createSuperAdminSchema,
 };

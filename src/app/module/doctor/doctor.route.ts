@@ -7,16 +7,20 @@ import { DoctorValidation } from "./doctor.validation";
 
 const router = Router();
 
-router.get("/", DoctorController.getAllDoctors);
+router.get(
+  "/",
+  authCheck(Role.ADMIN, Role.SUPER_ADMIN),
+  DoctorController.getAllDoctors,
+);
 router.get(
   "/:id",
-  authCheck(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR),
+  authCheck(Role.ADMIN, Role.SUPER_ADMIN),
   DoctorController.getDoctorById,
 );
 
 router.patch(
   "/:id",
-  authCheck(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR),
+  authCheck(Role.ADMIN, Role.SUPER_ADMIN),
   validateRequest(DoctorValidation.updateDoctorValidationSchema),
   DoctorController.updateDoctor,
 );

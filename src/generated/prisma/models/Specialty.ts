@@ -198,7 +198,7 @@ export type SpecialtyWhereInput = {
   AND?: Prisma.SpecialtyWhereInput | Prisma.SpecialtyWhereInput[]
   OR?: Prisma.SpecialtyWhereInput[]
   NOT?: Prisma.SpecialtyWhereInput | Prisma.SpecialtyWhereInput[]
-  id?: Prisma.StringFilter<"Specialty"> | string
+  id?: Prisma.UuidFilter<"Specialty"> | string
   title?: Prisma.StringFilter<"Specialty"> | string
   description?: Prisma.StringNullableFilter<"Specialty"> | string | null
   icons?: Prisma.StringNullableFilter<"Specialty"> | string | null
@@ -254,7 +254,7 @@ export type SpecialtyScalarWhereWithAggregatesInput = {
   AND?: Prisma.SpecialtyScalarWhereWithAggregatesInput | Prisma.SpecialtyScalarWhereWithAggregatesInput[]
   OR?: Prisma.SpecialtyScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SpecialtyScalarWhereWithAggregatesInput | Prisma.SpecialtyScalarWhereWithAggregatesInput[]
-  id?: Prisma.StringWithAggregatesFilter<"Specialty"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"Specialty"> | string
   title?: Prisma.StringWithAggregatesFilter<"Specialty"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Specialty"> | string | null
   icons?: Prisma.StringNullableWithAggregatesFilter<"Specialty"> | string | null

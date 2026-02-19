@@ -28,7 +28,7 @@ async function seedSuperAdmin() {
   });
   try {
     await prisma.$transaction(async (tx) => {
-      await tx.superAdmin.create({
+      await tx.admin.create({
         data: {
           userId: superAdminUser.user.id,
           name: superAdminData.name,
@@ -44,7 +44,7 @@ async function seedSuperAdmin() {
         },
         data: {
           emailVerified: true,
-          role: Role.ADMIN,
+          needsPasswordChange: true,
         },
       });
     }

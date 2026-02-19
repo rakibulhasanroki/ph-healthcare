@@ -6,10 +6,12 @@ export interface IAdminFilterRequest {
 }
 
 export interface IUpdateAdmin {
-  name?: string;
-  email?: string;
-  profilePhoto?: string;
-  contactNumber?: string;
-  address?: string;
-  gender?: Gender;
+  admin?: {
+    name?: string;
+    email?: string;
+    profilePhoto?: string;
+    contactNumber?: string;
+    address?: string;
+    gender?: Gender;
+  };
 }

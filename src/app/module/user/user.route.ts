@@ -9,22 +9,16 @@ const router = Router();
 
 router.post(
   "/create-doctor",
+  authCheck(Role.ADMIN, Role.SUPER_ADMIN),
   validateRequest(UserValidation.createDoctorSchema),
   UserController.createDoctor,
 );
 
 router.post(
   "/create-admin",
-  authCheck(Role.SUPER_ADMIN),
+  authCheck(Role.ADMIN, Role.SUPER_ADMIN),
   validateRequest(UserValidation.createAdminSchema),
   UserController.createAdmin,
-);
-
-router.post(
-  "/create-super-admin",
-  authCheck(Role.SUPER_ADMIN),
-  validateRequest(UserValidation.createSuperAdminSchema),
-  UserController.createSuperAdmin,
 );
 
 export const UserRoutes = router;
