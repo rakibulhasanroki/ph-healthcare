@@ -13,5 +13,18 @@ router.get(
 router.post("/register", AuthController.registerPatient);
 router.post("/login", AuthController.loginUser);
 router.post("/refresh-token", AuthController.getNewToken);
+router.post(
+  "/change-password",
+  authCheck(Role.PATIENT, Role.DOCTOR, Role.SUPER_ADMIN, Role.ADMIN),
+  AuthController.changePassword,
+);
+router.post(
+  "/logout",
+  authCheck(Role.PATIENT, Role.DOCTOR, Role.SUPER_ADMIN, Role.ADMIN),
+  AuthController.logout,
+);
 
+router.post("/verify-email", AuthController.verifyEmail);
+router.post("/forget-password", AuthController.forgetPassword);
+router.post("/reset-password", AuthController.resetPassword);
 export const AuthRouter = router;
