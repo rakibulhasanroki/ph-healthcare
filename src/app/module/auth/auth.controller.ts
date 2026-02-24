@@ -5,6 +5,8 @@ import { AuthService } from "./auth.service";
 import { TokenUtils } from "../../utils/token";
 import AppError from "../../errorHelpers/AppError";
 import { CookieUtils } from "../../utils/cookie";
+import { env } from "../../config/env";
+import { auth } from "../../lib/auth";
 
 const registerPatient = catchAsync(async (req, res) => {
   const payload = req.body;
@@ -166,6 +168,57 @@ const resetPassword = catchAsync(async (req, res) => {
     message: "Password reset successfully",
   });
 });
+
+const googleLogin = catchAsync(async (req, res) => {
+  const redirectPath = req.query.redirect || "/dashboard";
+  const encodedRedirectPath = encodeURIComponent(redirectPath as string);
+
+  const callbackURL = `${env.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
+
+  res.render("googleRedirect", {
+    callbackURL,
+    betterAuthUrl: env.BETTER_AUTH_URL,
+  });
+});
+
+const googleLoginSuccess = catchAsync(async (req, res) => {
+  const redirectPath = (req.query.redirect as string) || "/dashboard";
+  const sessionToken = req.cookies["better-auth.session_token"];
+  if (!sessionToken) {
+    return res.redirect(`${env.FRONTEND_URL}/login?error=oauth_failed`);
+  }
+  const session = await auth.api.getSession({
+    headers: {
+      Cookie: `better-auth.session_token=${sessionToken}`,
+    },
+  });
+
+  if (!session) {
+    return res.redirect(`${env.FRONTEND_URL}/login?error=session_not_found`);
+  }
+
+  if (session && !session.user) {
+    return res.redirect(`${env.FRONTEND_URL}/login?error=no_user_found`);
+  }
+  const result = await AuthService.googleLoginSuccess(session);
+  const { accessToken, refreshToken } = result;
+
+  TokenUtils.setAccessTokenCookie(res, accessToken);
+  TokenUtils.setRefreshTokenCookie(res, refreshToken);
+
+  const isValidRedirectPath =
+    redirectPath.startsWith("/") && !redirectPath.startsWith("//");
+
+  const finalRedirectPath = isValidRedirectPath ? redirectPath : "/dashboard";
+
+  res.redirect(`${env.FRONTEND_URL}${finalRedirectPath}`);
+});
+
+const handelOAuthError = catchAsync(async (req, res) => {
+  const error = req.query.error;
+  res.redirect(`${env.FRONTEND_URL}/login?error=${error}`);
+});
+
 export const AuthController = {
   registerPatient,
   loginUser,
@@ -176,4 +229,7 @@ export const AuthController = {
   verifyEmail,
   forgetPassword,
   resetPassword,
+  googleLogin,
+  googleLoginSuccess,
+  handelOAuthError,
 };

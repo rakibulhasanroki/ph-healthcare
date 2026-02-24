@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import status from "http-status";
 import { UserStatus } from "../../../generated/prisma/enums";
 import AppError from "../../errorHelpers/AppError";
@@ -372,11 +373,57 @@ const resetPassword = async (
     },
   });
 
+  if (isUserExist.needsPasswordChange) {
+    await prisma.user.update({
+      where: {
+        id: isUserExist.id,
+      },
+      data: {
+        needsPasswordChange: false,
+      },
+    });
+  }
+
   await prisma.session.deleteMany({
     where: {
       userId: isUserExist.id,
     },
   });
+};
+
+const googleLoginSuccess = async (session: Record<string, any>) => {
+  const isPatientExist = await prisma.patient.findUnique({
+    where: {
+      userId: session.user.id,
+    },
+  });
+
+  if (!isPatientExist) {
+    await prisma.patient.create({
+      data: {
+        userId: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+      },
+    });
+  }
+
+  const accessToken = TokenUtils.getAccessToken({
+    userId: session.user.id,
+    name: session.user.name,
+    role: session.user.role,
+  });
+
+  const refreshToken = TokenUtils.getRefreshToken({
+    userId: session.user.id,
+    name: session.user.name,
+    role: session.user.role,
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const AuthService = {
@@ -389,4 +436,5 @@ export const AuthService = {
   verifyEmail,
   forgetPassword,
   resetPassword,
+  googleLoginSuccess,
 };
