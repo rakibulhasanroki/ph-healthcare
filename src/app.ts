@@ -33,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Ph-Healthcare backend is running");
