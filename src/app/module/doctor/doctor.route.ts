@@ -9,7 +9,7 @@ const router = Router();
 
 router.get(
   "/",
-  authCheck(Role.ADMIN, Role.SUPER_ADMIN),
+  // authCheck(Role.ADMIN, Role.SUPER_ADMIN),
   DoctorController.getAllDoctors,
 );
 router.get(
