@@ -28,7 +28,7 @@ router.get(
   DoctorScheduleController.getDoctorScheduleById,
 );
 router.patch(
-  "/update-my-doctor-schedule/:id",
+  "/update-my-doctor-schedule",
   authCheck(Role.DOCTOR),
   DoctorScheduleController.updateMyDoctorSchedule,
 );
