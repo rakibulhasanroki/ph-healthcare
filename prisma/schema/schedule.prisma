@@ -1,5 +1,5 @@
 model Schedule {
-  id            String   @id @default(uuid(7)) @db.Uuid
+  id            String   @id @default(uuid(7))
   startDateTime DateTime
   endDateTime   DateTime
   createdAt     DateTime @default(now())
@@ -13,15 +13,15 @@ model Schedule {
 }
 
 model DoctorSchedules {
-  id        String   @id @default(uuid(7)) @db.Uuid
+  id        String   @id @default(uuid(7))
   isBooked  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  doctorId   String   @db.Uuid
+  doctorId   String
   doctor     Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  scheduleId String   @db.Uuid
+  scheduleId String
   schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([doctorId, scheduleId])

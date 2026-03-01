@@ -4,7 +4,9 @@ import { sendResponse } from "../../shared/sendResponse";
 import { AppointmentService } from "./appointment.service";
 
 const bookAppointment = catchAsync(async (req, res) => {
-  const result = await AppointmentService.bookAppointment();
+  const payload = req.body;
+  const user = req.user!;
+  const result = await AppointmentService.bookAppointment(payload, user);
   sendResponse(res, {
     httpStatus: status.CREATED,
     success: true,
@@ -24,7 +26,8 @@ const getAllAppointments = catchAsync(async (req, res) => {
 });
 
 const getMyAppointments = catchAsync(async (req, res) => {
-  const result = await AppointmentService.getMyAppointments();
+  const user = req.user!;
+  const result = await AppointmentService.getMyAppointments(user);
   sendResponse(res, {
     httpStatus: status.OK,
     success: true,
@@ -34,7 +37,12 @@ const getMyAppointments = catchAsync(async (req, res) => {
 });
 
 const getMySingleAppointment = catchAsync(async (req, res) => {
-  const result = await AppointmentService.getMySingleAppointment();
+  const { id } = req.params;
+  const user = req.user!;
+  const result = await AppointmentService.getMySingleAppointment(
+    id as string,
+    user,
+  );
   sendResponse(res, {
     httpStatus: status.OK,
     success: true,
@@ -44,7 +52,14 @@ const getMySingleAppointment = catchAsync(async (req, res) => {
 });
 
 const changeAppointmentStatus = catchAsync(async (req, res) => {
-  const result = await AppointmentService.changeAppointmentStatus();
+  const user = req.user!;
+  const { id } = req.params;
+  const payload = req.body;
+  const result = await AppointmentService.changeAppointmentStatus(
+    id as string,
+    payload,
+    user,
+  );
   sendResponse(res, {
     httpStatus: status.OK,
     success: true,
