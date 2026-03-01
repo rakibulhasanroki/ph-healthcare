@@ -12,15 +12,15 @@ router.post(
 );
 
 router.get(
-  "/all-appointments",
-  authCheck(Role.ADMIN, Role.SUPER_ADMIN),
-  AppointmentController.getAllAppointments,
-);
-
-router.get(
   "/my-appointments",
   authCheck(Role.PATIENT, Role.DOCTOR),
   AppointmentController.getMyAppointments,
+);
+
+router.patch(
+  "/change-appointment-status/:id",
+  authCheck(Role.ADMIN, Role.SUPER_ADMIN, Role.DOCTOR, Role.PATIENT),
+  AppointmentController.changeAppointmentStatus,
 );
 
 router.get(
@@ -28,10 +28,11 @@ router.get(
   authCheck(Role.PATIENT, Role.DOCTOR),
   AppointmentController.getMySingleAppointment,
 );
-router.patch(
-  "/change-appointment-status/:id",
+
+router.get(
+  "/all-appointments",
   authCheck(Role.ADMIN, Role.SUPER_ADMIN),
-  AppointmentController.changeAppointmentStatus,
+  AppointmentController.getAllAppointments,
 );
 
 export const AppointmentRoutes = router;

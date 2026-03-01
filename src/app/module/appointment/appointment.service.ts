@@ -169,6 +169,7 @@ const changeAppointmentStatus = async (
     },
     include: {
       doctor: true,
+      patient: true,
     },
   });
   // if (!appointmentData) {
@@ -180,6 +181,13 @@ const changeAppointmentStatus = async (
       throw new AppError(status.FORBIDDEN, "This is not your appointment");
     }
   }
+
+  if (user?.role === Role.PATIENT) {
+    if (!(user?.email === appointmentData?.patient?.email)) {
+      throw new AppError(status.FORBIDDEN, "This is not your appointment");
+    }
+  }
+
   return await prisma.appointment.update({
     where: {
       id: appointmentId,
