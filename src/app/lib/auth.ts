@@ -76,7 +76,12 @@ export const auth = betterAuth({
             email,
           },
         });
-
+        if (user && user.role === Role.SUPER_ADMIN) {
+          console.log(
+            `User with email ${email} is a super admin. Skipping sending verification OTP.`,
+          );
+          return;
+        }
         if (type === "email-verification") {
           if (!user) {
             throw new Error("User not found");
@@ -89,20 +94,22 @@ export const auth = betterAuth({
           return;
         }
 
-        await sendEmail({
-          to: email,
-          subject:
-            type === "email-verification"
-              ? "Email Verification"
-              : "Reset Password",
-          templateName: "otp",
-          templateData: {
-            name: user?.name,
-            otp,
-            type,
-            expiryMinutes: 2,
-          },
-        });
+        if (user && !user.emailVerified) {
+          await sendEmail({
+            to: email,
+            subject:
+              type === "email-verification"
+                ? "Email Verification"
+                : "Reset Password",
+            templateName: "otp",
+            templateData: {
+              name: user?.name,
+              otp,
+              type,
+              expiryMinutes: 2,
+            },
+          });
+        }
       },
       expiresIn: 2 * 60,
       otpLength: 6,
