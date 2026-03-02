@@ -233,6 +233,51 @@ const changeAppointmentStatus = async (
       throw new AppError(status.FORBIDDEN, "This is not your appointment");
     }
   }
+  if (
+    (appointmentData.status === AppointmentStatus.COMPLETED ||
+      appointmentData.status === AppointmentStatus.CANCELED) &&
+    user.role !== Role.ADMIN &&
+    user.role !== Role.SUPER_ADMIN
+  ) {
+    throw new AppError(
+      status.BAD_REQUEST,
+      "Completed or cancelled appointments cannot be updated",
+    );
+  }
+  if (user.role === Role.DOCTOR) {
+    const current = appointmentData.status;
+
+    const allowedDoctorTransitions: Record<
+      AppointmentStatus,
+      AppointmentStatus[]
+    > = {
+      [AppointmentStatus.SCHEDULED]: [
+        AppointmentStatus.INPROGRESS,
+        AppointmentStatus.CANCELED,
+      ],
+      [AppointmentStatus.INPROGRESS]: [AppointmentStatus.COMPLETED],
+      [AppointmentStatus.COMPLETED]: [],
+      [AppointmentStatus.CANCELED]: [],
+    };
+
+    if (!allowedDoctorTransitions[current]?.includes(appointmentStatus)) {
+      throw new AppError(
+        status.BAD_REQUEST,
+        "Doctor cannot update to this status",
+      );
+    }
+  }
+  if (user.role === Role.PATIENT) {
+    if (
+      appointmentData.status !== AppointmentStatus.SCHEDULED ||
+      appointmentStatus !== AppointmentStatus.CANCELED
+    ) {
+      throw new AppError(
+        status.BAD_REQUEST,
+        "Patients can only cancel scheduled appointments",
+      );
+    }
+  }
 
   return await prisma.appointment.update({
     where: {
@@ -371,6 +416,54 @@ const initiatePayment = async (appointmentId: string, user: Express.User) => {
   };
 };
 
+const cancelUnpaidAppointments = async () => {
+  const thirtyMinutesAgo = new Date(Date.now() + 30 * 60 * 1000);
+  const unpaidAppointments = await prisma.appointment.findMany({
+    where: {
+      createdAt: {
+        lte: thirtyMinutesAgo,
+      },
+      paymentStatus: PaymentStatus.UNPAID,
+    },
+  });
+  const appointmentToCancel = unpaidAppointments.map(
+    (appointment) => appointment.id,
+  );
+  await prisma.$transaction(async (tx) => {
+    await tx.appointment.updateMany({
+      where: {
+        id: {
+          in: appointmentToCancel,
+        },
+      },
+      data: {
+        status: AppointmentStatus.CANCELED,
+      },
+    });
+    await tx.payment.deleteMany({
+      where: {
+        appointmentId: {
+          in: appointmentToCancel,
+        },
+      },
+    });
+
+    for (const unpaidAppointment of unpaidAppointments) {
+      await tx.doctorSchedules.update({
+        where: {
+          doctorId_scheduleId: {
+            doctorId: unpaidAppointment.doctorId,
+            scheduleId: unpaidAppointment.scheduleId,
+          },
+        },
+        data: {
+          isBooked: false,
+        },
+      });
+    }
+  });
+};
+
 export const AppointmentService = {
   bookAppointment,
   getAllAppointments,
@@ -379,4 +472,5 @@ export const AppointmentService = {
   changeAppointmentStatus,
   bookAppointmentWithPayLater,
   initiatePayment,
+  cancelUnpaidAppointments,
 };

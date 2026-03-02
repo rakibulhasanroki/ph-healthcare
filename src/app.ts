@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Application, Request, Response } from "express";
 import { IndexRouter } from "./app/router";
 import globalErrorHandler from "./app/middleware/globalError.Handler";
@@ -10,6 +11,8 @@ import cors from "cors";
 import { env } from "./app/config/env";
 import qs from "qs";
 import { PaymentController } from "./app/module/payment/payment.controller";
+import cron from "node-cron";
+import { AppointmentService } from "./app/module/appointment/appointment.service";
 
 const app: Application = express();
 app.set("query parser", (str: string) => qs.parse(str));
@@ -43,6 +46,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+
+cron.schedule("*/30 * * * *", async () => {
+  try {
+    console.log("running cron job to cancel unpaid appointments");
+    await AppointmentService.cancelUnpaidAppointments();
+  } catch (error: any) {
+    console.error(
+      "Error occurred while canceling unpaid appointments:",
+      error.message,
+    );
+  }
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Ph-Healthcare backend is running");
