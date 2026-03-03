@@ -44,7 +44,6 @@ const authCheck =
             res.setHeader("X-Session-Refresh", "true");
             res.setHeader("X-Session-Expires-At", expireAt.toISOString());
             res.setHeader("X-Time-Remaining", timeRemaining.toString());
-            console.log("Session Expiring Soon!");
           }
           if (
             user.status === UserStatus.BLOCKED ||

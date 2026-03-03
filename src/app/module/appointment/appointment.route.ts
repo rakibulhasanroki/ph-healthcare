@@ -41,7 +41,7 @@ router.post(
   AppointmentController.bookAppointmentWithPayLater,
 );
 router.post(
-  "/initiate-payment",
+  "/initiate-payment/:id",
   authCheck(Role.PATIENT),
   AppointmentController.initiatePayment,
 );

@@ -90,26 +90,31 @@ export const auth = betterAuth({
             throw new Error("Email already verified");
           }
         }
-        if (type === "forget-password" && !user) {
-          return;
+        if (type === "forget-password") {
+          if (!user) {
+            return;
+          }
+          if (!user.emailVerified) {
+            throw new Error("Email not verified");
+          }
         }
 
-        if (user && !user.emailVerified) {
-          await sendEmail({
-            to: email,
-            subject:
-              type === "email-verification"
-                ? "Email Verification"
-                : "Reset Password",
-            templateName: "otp",
-            templateData: {
-              name: user?.name,
-              otp,
-              type,
-              expiryMinutes: 2,
-            },
-          });
-        }
+        await sendEmail({
+          to: email,
+          subject:
+            type === "email-verification"
+              ? "Email Verification"
+              : "Reset Password",
+          templateName: "otp",
+          templateData: {
+            name: user?.name,
+            otp,
+            type,
+            expiryMinutes: 2,
+          },
+        }).catch((err) => {
+          console.error(err);
+        });
       },
       expiresIn: 2 * 60,
       otpLength: 6,

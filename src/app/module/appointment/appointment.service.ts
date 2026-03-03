@@ -1,4 +1,4 @@
-import { uuidv7 } from "zod";
+import { v7 as uuidv7 } from "uuid";
 import { prisma } from "../../lib/prisma";
 import { IBookAppointmentPayload } from "./appointment.interface";
 import {
@@ -24,7 +24,7 @@ const bookAppointment = async (
 
   const doctorData = await prisma.doctor.findUniqueOrThrow({
     where: {
-      email: payload.doctorId,
+      id: payload.doctorId,
       isDeleted: false,
     },
   });
@@ -42,6 +42,10 @@ const bookAppointment = async (
       },
     },
   });
+
+  if (doctorScheduleData.isBooked) {
+    throw new AppError(status.BAD_REQUEST, "Schedule is already booked");
+  }
 
   const videoCallingId = String(uuidv7());
 
@@ -85,7 +89,7 @@ const bookAppointment = async (
             product_data: {
               name: `Appointment with ${doctorData.name}`,
             },
-            unit_amount: doctorData.appointmentFee * 122,
+            unit_amount: doctorData.appointmentFee * 100,
           },
           quantity: 1,
         },
@@ -303,7 +307,7 @@ const bookAppointmentWithPayLater = async (
 
   const doctorData = await prisma.doctor.findUniqueOrThrow({
     where: {
-      email: payload.doctorId,
+      id: payload.doctorId,
       isDeleted: false,
     },
   });
@@ -321,6 +325,10 @@ const bookAppointmentWithPayLater = async (
       },
     },
   });
+
+  if (doctorScheduleData.isBooked) {
+    throw new AppError(status.BAD_REQUEST, "Schedule is already booked");
+  }
 
   const videoCallingId = String(uuidv7());
 
@@ -397,7 +405,7 @@ const initiatePayment = async (appointmentId: string, user: Express.User) => {
             name: `Appointment with ${appointmentData.doctor.name}`,
           },
           unit_amount: Math.round(
-            Number(appointmentData.doctor.appointmentFee) * 122,
+            Number(appointmentData.doctor.appointmentFee) * 100,
           ),
         },
         quantity: 1,
@@ -407,9 +415,9 @@ const initiatePayment = async (appointmentId: string, user: Express.User) => {
       appointmentId: appointmentData.id,
       paymentId: appointmentData.payment.id,
     },
-    success_url: `${env.FRONTEND_URL}/dashboard/payment/success`,
+    success_url: `${env.FRONTEND_URL}/dashboard/payment-success?appointmentId=${appointmentData.id}&payment_id=${appointmentData.payment.id}`,
 
-    cancel_url: `${env.FRONTEND_URL}/dashboard/appointment`,
+    cancel_url: `${env.FRONTEND_URL}/dashboard/appointments?error=payment_failed`,
   });
   return {
     paymentUrl: session.url,

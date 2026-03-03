@@ -127,6 +127,7 @@ const updateMyDoctorSchedule = async (
   const result = await prisma.$transaction(async (tx) => {
     await tx.doctorSchedules.deleteMany({
       where: {
+        isBooked: false,
         doctorId: doctorData.id,
         scheduleId: {
           in: deleteIds,
@@ -153,6 +154,7 @@ const deleteMyDoctorSchedule = async (id: string, user: Express.User) => {
   });
   const result = await prisma.doctorSchedules.deleteMany({
     where: {
+      isBooked: false,
       doctorId: doctorData.id,
       scheduleId: id,
     },

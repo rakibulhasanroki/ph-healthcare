@@ -10,7 +10,7 @@ export const transporter = nodemailer.createTransport({
   host: env.EMAIL_SENDER.SMTP_HOST,
 
   port: Number(env.EMAIL_SENDER.SMTP_PORT),
-  secure: true,
+  secure: false,
   auth: {
     user: env.EMAIL_SENDER.SMTP_USER,
     pass: env.EMAIL_SENDER.SMTP_PASS,
