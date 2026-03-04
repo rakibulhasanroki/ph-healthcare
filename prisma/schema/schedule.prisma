@@ -1,28 +1,24 @@
 model Schedule {
-  id            String   @id @default(uuid(7))
-  startDateTime DateTime
-  endDateTime   DateTime
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Relations
+  id              String            @id @default(uuid(7))
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  endDateTime     DateTime
+  startDateTime   DateTime
+  appointments    Appointment?
   doctorSchedules DoctorSchedules[]
-  appointments    Appointment[]
 
   @@map("schedules")
 }
 
 model DoctorSchedules {
-  id        String   @id @default(uuid(7))
-  isBooked  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
+  id         String   @id @default(uuid(7))
+  isBooked   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   doctorId   String
-  doctor     Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   scheduleId String
-  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  doctor     Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
 
   @@unique([doctorId, scheduleId])
   @@index([doctorId])

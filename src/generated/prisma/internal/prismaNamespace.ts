@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.4.0
- * Query Engine version: ab56fe763f921d033a6c195e7ddeb3e255bdbb57
+ * Prisma Client JS version: 7.4.2
+ * Query Engine version: 94a226be1cf2967af2541cca5529f0f7ba866919
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.4.0",
-  engine: "ab56fe763f921d033a6c195e7ddeb3e255bdbb57"
+  client: "7.4.2",
+  engine: "94a226be1cf2967af2541cca5529f0f7ba866919"
 }
 
 /**
@@ -1737,14 +1737,14 @@ export type AdminScalarFieldEnum = (typeof AdminScalarFieldEnum)[keyof typeof Ad
 
 export const AppointmentScalarFieldEnum = {
   id: 'id',
-  videoCallingId: 'videoCallingId',
   status: 'status',
   paymentStatus: 'paymentStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   patientId: 'patientId',
   doctorId: 'doctorId',
-  scheduleId: 'scheduleId'
+  scheduleId: 'scheduleId',
+  videoCallingId: 'videoCallingId'
 } as const
 
 export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
@@ -1815,7 +1815,6 @@ export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[k
 
 export const DoctorScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   email: 'email',
   profilePhoto: 'profilePhoto',
   contactNumber: 'contactNumber',
@@ -1832,7 +1831,8 @@ export const DoctorScalarFieldEnum = {
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  userId: 'userId'
+  userId: 'userId',
+  name: 'name'
 } as const
 
 export type DoctorScalarFieldEnum = (typeof DoctorScalarFieldEnum)[keyof typeof DoctorScalarFieldEnum]
@@ -1840,12 +1840,11 @@ export type DoctorScalarFieldEnum = (typeof DoctorScalarFieldEnum)[keyof typeof 
 
 export const MedicalReportScalarFieldEnum = {
   id: 'id',
-  diagnosis: 'diagnosis',
-  treatment: 'treatment',
-  followUpDate: 'followUpDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  patientId: 'patientId'
+  patientId: 'patientId',
+  reportLink: 'reportLink',
+  reportName: 'reportName'
 } as const
 
 export type MedicalReportScalarFieldEnum = (typeof MedicalReportScalarFieldEnum)[keyof typeof MedicalReportScalarFieldEnum]
@@ -1897,13 +1896,13 @@ export type PatientHealthDataScalarFieldEnum = (typeof PatientHealthDataScalarFi
 export const PaymentScalarFieldEnum = {
   id: 'id',
   amount: 'amount',
-  transactionId: 'transactionId',
-  stripeEventId: 'stripeEventId',
   status: 'status',
   paymentGatewayData: 'paymentGatewayData',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  appointmentId: 'appointmentId'
+  appointmentId: 'appointmentId',
+  stripeEventId: 'stripeEventId',
+  transactionId: 'transactionId'
 } as const
 
 export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
@@ -1939,10 +1938,10 @@ export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof 
 
 export const ScheduleScalarFieldEnum = {
   id: 'id',
-  startDateTime: 'startDateTime',
-  endDateTime: 'endDateTime',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  endDateTime: 'endDateTime',
+  startDateTime: 'startDateTime'
 } as const
 
 export type ScheduleScalarFieldEnum = (typeof ScheduleScalarFieldEnum)[keyof typeof ScheduleScalarFieldEnum]

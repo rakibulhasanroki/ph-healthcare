@@ -1,26 +1,31 @@
+import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { cloudinaryConfig } from "./cloudinary.config";
-import multer from "multer";
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinaryConfig,
   params: async (req, file) => {
     const originalName = file.originalname;
     const extension = originalName.split(".").pop()?.toLocaleLowerCase();
+
     const fileNameWithoutExtension = originalName
       .split(".")
       .slice(0, -1)
       .join(".")
       .toLowerCase()
-      .replace(/\s/g, "-")
-      .replace(/[^a=z0-9]/g, "");
+      .replace(/\s+/g, "-")
+      // eslint-disable-next-line no-useless-escape
+      .replace(/[^a-z0-9\-]/g, "");
+
     const uniqueName =
       Math.random().toString(36).substring(2) +
       "-" +
       Date.now() +
       "-" +
       fileNameWithoutExtension;
+
     const folder = extension === "pdf" ? "pdfs" : "images";
+
     return {
       folder: `ph-healthcare/${folder}`,
       public_id: uniqueName,
@@ -29,6 +34,4 @@ const storage = new CloudinaryStorage({
   },
 });
 
-export const multerConfig = multer({
-  storage,
-});
+export const multerConfig = multer({ storage });

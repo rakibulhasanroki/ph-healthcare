@@ -8,6 +8,7 @@ import { TErrorResponse, TErrorSources } from "../interfaces/error.interfaces";
 import { handelZodError } from "../errorHelpers/handelZodError";
 import AppError from "../errorHelpers/AppError";
 import { deleteFileFromCloudinary } from "../config/cloudinary.config";
+import { deleteUploadedFileFromCloudinary } from "../utils/deleteUploadedFileFromCloudinary";
 
 const globalErrorHandler = async (
   err: any,
@@ -19,14 +20,7 @@ const globalErrorHandler = async (
     console.error("From Global Error Handler", err);
   }
 
-  if (req.file) {
-    deleteFileFromCloudinary(req.file.path);
-  }
-
-  if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-    const imageUrls = req.files.map((file: any) => file.path);
-    await Promise.all(imageUrls.map((url) => deleteFileFromCloudinary(url)));
-  }
+  await deleteUploadedFileFromCloudinary(req);
 
   let errorSources: TErrorSources[] = [];
   let stack: string | undefined = undefined;
