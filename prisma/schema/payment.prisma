@@ -2,6 +2,7 @@ model Payment {
   id                 String        @id @default(uuid(7))
   amount             Float
   status             PaymentStatus @default(UNPAID)
+  invoiceUrl         String?
   paymentGatewayData Json?
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt

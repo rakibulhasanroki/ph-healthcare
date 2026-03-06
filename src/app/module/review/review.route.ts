@@ -31,3 +31,5 @@ router.patch(
 );
 
 router.delete("/:id", authCheck(Role.PATIENT), ReviewController.deleteReview);
+
+export const ReviewRoutes = router;
