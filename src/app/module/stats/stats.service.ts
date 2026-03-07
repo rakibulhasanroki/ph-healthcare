@@ -25,6 +25,9 @@ const getSuperAdminStats = async () => {
       status: PaymentStatus.PAID,
     },
   });
+
+  const pieChartData = await getPieChartData();
+  const barChatData = await getBarChartData();
   return {
     appointmentCount,
     patientCount,
@@ -34,6 +37,8 @@ const getSuperAdminStats = async () => {
     paymentCount,
     userCount,
     totalRevenue: totalRevenue._sum.amount || 0,
+    pieChartData,
+    barChatData,
   };
 };
 const getAdminStats = async () => {
@@ -50,6 +55,9 @@ const getAdminStats = async () => {
       status: PaymentStatus.PAID,
     },
   });
+
+  const pieChartData = await getPieChartData();
+  const barChatData = await getBarChartData();
   return {
     appointmentCount,
     patientCount,
@@ -57,6 +65,8 @@ const getAdminStats = async () => {
     adminCount,
     userCount,
     totalRevenue: totalRevenue._sum.amount || 0,
+    pieChartData,
+    barChatData,
   };
 };
 const getDoctorStats = async (user: Express.User) => {
@@ -162,6 +172,40 @@ const getPatientStats = async (user: Express.User) => {
     appointmentCount,
     appointmentStatusDistribution: formattedAppointmentStatusDistribution,
   };
+};
+
+const getPieChartData = async () => {
+  const appointmentStatusDistribution = await prisma.appointment.groupBy({
+    by: ["status"],
+    _count: {
+      id: true,
+    },
+  });
+  const formattedAppointmentStatusDistribution =
+    appointmentStatusDistribution.map((item) => {
+      return {
+        status: item.status,
+        count: item._count.id,
+      };
+    });
+  return formattedAppointmentStatusDistribution;
+};
+
+const getBarChartData = async () => {
+  interface AppointmentCountByMonth {
+    month: Date;
+    count: bigint;
+  }
+  const appointmentCountByMonth: AppointmentCountByMonth =
+    await prisma.$queryRaw`
+    SELECT DATE_TRUNC('month', "createdAt") AS "month",
+    CAST(COUNT(*) AS INTEGER) AS "count"
+    FROM "appointments"
+    GROUP BY "month"
+    ORDER BY "month" ASC
+  `;
+
+  return appointmentCountByMonth;
 };
 
 const getStats = async (user: Express.User) => {
