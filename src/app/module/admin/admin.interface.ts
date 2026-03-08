@@ -1,4 +1,4 @@
-import { Gender } from "../../../generated/prisma/enums";
+import { Gender, Role, UserStatus } from "../../../generated/prisma/enums";
 
 export interface IAdminFilterRequest {
   name?: string;
@@ -14,4 +14,14 @@ export interface IUpdateAdmin {
     address?: string;
     gender?: Gender;
   };
+}
+
+export interface IChangeUserStatus {
+  userId: string;
+  userStatus: UserStatus;
+}
+
+export interface IChangeUserRole {
+  userId: string;
+  role: Role;
 }
